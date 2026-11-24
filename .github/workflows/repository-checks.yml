@@ -1,0 +1,30 @@
+name: Repository checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  structure:
+    name: Check project structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Verify required project documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s README.md
+          test -s docs/PRODUCT_SPEC.md
+          test -s docs/ROADMAP.md
+          test -s docs/REFERENCE_AND_DESIGN.md
+          test -s installer/README.md
+          test -s shell/README.md
+          test -s editions/README.md
+          echo "Lixel repository structure is present."
