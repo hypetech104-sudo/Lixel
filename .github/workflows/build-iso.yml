@@ -1,0 +1,48 @@
+name: Build Lixel OS ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: "Which Lixel edition should be built?"
+        required: true
+        type: choice
+        options:
+          - VM
+          - Normal
+          - Dualboot
+          - Test
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Lixel ${{ inputs.edition }} (Debian + KDE Plasma)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Debian live-build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build debootstrap xorriso squashfs-tools             isolinux syslinux-common grub-pc-bin grub-efi-amd64-bin             mtools dosfstools
+
+      - name: Build ISO
+        env:
+          EDITION: ${{ inputs.edition }}
+        run: |
+          sudo -E bash build/build-iso.sh "$EDITION"
+          sudo chown -R "$USER":"$USER" dist
+
+      - name: Upload ISO and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lixel-${{ inputs.edition }}-amd64
+          path: |
+            dist/*.iso
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 14
