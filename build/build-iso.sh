@@ -22,6 +22,48 @@ cd "$WORK"
 mkdir -p config/includes.chroot/etc
 printf '%s\n' "$EDITION" > config/includes.chroot/etc/lixel-edition
 
+# Install the Lixel wallpaper and apply it once for each user's first Plasma login.
+WALLPAPER_SOURCE="$ROOT/build/wallpapers/Lixel-Wallpaper.png"
+if [[ ! -f "$WALLPAPER_SOURCE" ]]; then
+  echo "Missing default wallpaper: $WALLPAPER_SOURCE" >&2
+  exit 1
+fi
+
+install -D -m 0644 "$WALLPAPER_SOURCE" \
+  config/includes.chroot/usr/share/wallpapers/Lixel/Lixel-Wallpaper.png
+
+mkdir -p config/includes.chroot/usr/local/bin config/includes.chroot/etc/xdg/autostart
+cat > config/includes.chroot/usr/local/bin/lixel-set-default-wallpaper <<'WALLPAPER_SCRIPT'
+#!/usr/bin/env bash
+set -eu
+
+WALLPAPER="/usr/share/wallpapers/Lixel/Lixel-Wallpaper.png"
+MARKER="${XDG_CONFIG_HOME:-$HOME/.config}/lixel/default-wallpaper-applied"
+
+# Do not overwrite a wallpaper the user has chosen after the first login.
+if [[ -e "$MARKER" || ! -f "$WALLPAPER" ]]; then
+  exit 0
+fi
+
+# Give Plasma a moment to finish starting its desktop session.
+sleep 5
+if plasma-apply-wallpaperimage --fill-mode preserveAspectCrop "$WALLPAPER"; then
+  mkdir -p "$(dirname "$MARKER")"
+  touch "$MARKER"
+fi
+WALLPAPER_SCRIPT
+chmod 0755 config/includes.chroot/usr/local/bin/lixel-set-default-wallpaper
+
+cat > config/includes.chroot/etc/xdg/autostart/lixel-default-wallpaper.desktop <<'AUTOSTART'
+[Desktop Entry]
+Type=Application
+Name=Lixel Default Wallpaper
+Comment=Apply the Lixel wallpaper on first login
+Exec=/usr/local/bin/lixel-set-default-wallpaper
+OnlyShowIn=KDE;
+X-KDE-autostart-after=plasma-desktop
+AUTOSTART
+
 if [[ "$EDITION" == "VM" ]]; then
   cat config/package-lists/lixel-vm.list.chroot >> config/package-lists/lixel-base.list.chroot
 fi
