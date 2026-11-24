@@ -20,22 +20,26 @@ jobs:
   build:
     name: Build Lixel ${{ inputs.edition }} (Debian + KDE Plasma)
     runs-on: ubuntu-24.04
+    container:
+      image: debian:trixie
     timeout-minutes: 180
     steps:
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates debian-archive-keyring live-build debootstrap \
+            xorriso squashfs-tools isolinux syslinux-common grub-pc-bin \
+            grub-efi-amd64-bin mtools dosfstools
+
       - name: Check out source
         uses: actions/checkout@v4
-
-      - name: Install Debian live-build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y live-build debootstrap xorriso squashfs-tools             isolinux syslinux-common grub-pc-bin grub-efi-amd64-bin             mtools dosfstools
 
       - name: Build ISO
         env:
           EDITION: ${{ inputs.edition }}
         run: |
-          sudo -E bash build/build-iso.sh "$EDITION"
-          sudo chown -R "$USER":"$USER" dist
+          bash build/build-iso.sh "$EDITION"
 
       - name: Upload ISO and checksum
         uses: actions/upload-artifact@v4
