@@ -1,0 +1,22 @@
+# Lixel OS live desktop baseline (Debian Trixie, amd64)
+# KDE Plasma desktop and core desktop applications
+plasma-desktop
+plasma-workspace
+sddm
+dolphin
+konsole
+plasma-nm
+systemsettings
+ kde-config-sddm
+# Networking, browser, firmware, and live session
+network-manager
+firefox-esr
+sudo
+firmware-linux
+firmware-linux-nonfree
+live-boot
+live-config
+live-config-systemd
+xserver-xorg
+dbus-x11
+systemd-sysv
