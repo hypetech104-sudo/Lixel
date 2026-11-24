@@ -7,7 +7,6 @@ dolphin
 konsole
 plasma-nm
 systemsettings
- kde-config-sddm
 # Networking, browser, firmware, and live session
 network-manager
 firefox-esr
