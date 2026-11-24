@@ -27,6 +27,7 @@ if [[ "$EDITION" == "VM" ]]; then
 fi
 
 lb config \
+  --mode debian \
   --distribution trixie \
   --architectures amd64 \
   --archive-areas "main contrib non-free non-free-firmware" \
