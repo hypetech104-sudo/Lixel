@@ -14,7 +14,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-cp -a "$ROOT/build/." "$WORK/"
+mkdir -p "$WORK/config"
+cp -a "$ROOT/build/package-lists" "$WORK/config/package-lists"
 cd "$WORK"
 
 # Keep the edition identity inside the live filesystem.
