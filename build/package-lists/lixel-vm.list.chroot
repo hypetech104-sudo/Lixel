@@ -1,0 +1,4 @@
+# Additional guest integration for Lixel VM
+spice-vdagent
+qemu-guest-agent
+open-vm-tools-desktop
