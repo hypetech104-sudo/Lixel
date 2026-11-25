@@ -64,6 +64,20 @@ OnlyShowIn=KDE;
 X-KDE-autostart-after=plasma-desktop
 AUTOSTART
 
+# Install Lixel's light and dark KDE color schemes system-wide.
+install -D -m 0644 "$ROOT/build/themes/LixelLight.colors" \
+  config/includes.chroot/usr/share/color-schemes/LixelLight.colors
+install -D -m 0644 "$ROOT/build/themes/LixelDark.colors" \
+  config/includes.chroot/usr/share/color-schemes/LixelDark.colors
+
+# Light mode is the first-login default; users can switch to Lixel Dark in
+# System Settings > Colors. /etc/xdg provides KDE system-wide defaults.
+mkdir -p config/includes.chroot/etc/xdg
+cat > config/includes.chroot/etc/xdg/kdeglobals <<'KDE_DEFAULTS'
+[General]
+ColorScheme=LixelLight
+KDE_DEFAULTS
+
 if [[ "$EDITION" == "VM" ]]; then
   cat config/package-lists/lixel-vm.list.chroot >> config/package-lists/lixel-base.list.chroot
 fi
